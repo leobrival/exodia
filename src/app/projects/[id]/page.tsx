@@ -137,7 +137,7 @@ export default function ProjectDetailsPage() {
 
         {/* TODO ✅ RÉALISÉ: Afficher le projet dans la page */}
         {/* TODO ✅ RÉALISÉ: Diviser la page en 3 colonnes : */}
-        <main className="flex flex-1 w-full overflow-hidden px-6 pt-6 gap-6">
+        <main className="flex flex-1 w-full overflow-hidden px-6 gap-6">
           {/* TODO ✅ RÉALISÉ: 1/4 : Liste des sources (à gauche) */}
           <SourcesList
             documents={documents}
