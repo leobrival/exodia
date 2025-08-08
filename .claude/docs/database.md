@@ -72,6 +72,20 @@ CREATE TABLE documents (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Project notes table
+CREATE TABLE project_notes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  tags TEXT[], -- Tags optionnels pour catégoriser les notes
+  embedding vector(1536), -- Embedding pour le RAG
+  is_active BOOLEAN DEFAULT true, -- Pour activer/désactiver une note dans le RAG
+  created_by UUID REFERENCES auth.users(id),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
 ```
 
 ## Vector Search Setup

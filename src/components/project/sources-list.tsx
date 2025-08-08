@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { deleteDocument, type Document } from "@/lib/actions/documents";
 import {
@@ -14,7 +15,7 @@ import {
   Trash2,
   Wand,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import SourcesListSkeleton from "./sources-list-skeleton";
 
@@ -23,6 +24,7 @@ interface SourcesListProps {
   loading: boolean;
   error: string | null;
   onAddSource: () => void;
+  onSelectedSourcesChange?: (selectedIds: string[]) => void;
 }
 
 export default function SourcesList({
@@ -30,8 +32,49 @@ export default function SourcesList({
   loading,
   error,
   onAddSource,
+  onSelectedSourcesChange,
 }: SourcesListProps) {
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [selectedSources, setSelectedSources] = useState<Set<string>>(new Set());
+
+  // Initialiser avec toutes les sources "ready" sélectionnées par défaut
+  useEffect(() => {
+    const readyDocs = documents.filter(doc => doc.status === 'ready');
+    const readyIds = new Set(readyDocs.map(doc => doc.id));
+    setSelectedSources(readyIds);
+  }, [documents]);
+
+  // Notifier le parent des changements de sélection
+  useEffect(() => {
+    if (onSelectedSourcesChange) {
+      onSelectedSourcesChange(Array.from(selectedSources));
+    }
+  }, [selectedSources, onSelectedSourcesChange]);
+
+  const handleSourceToggle = (documentId: string, checked: boolean) => {
+    setSelectedSources(prev => {
+      const newSet = new Set(prev);
+      if (checked) {
+        newSet.add(documentId);
+      } else {
+        newSet.delete(documentId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = () => {
+    const readyDocs = documents.filter(doc => doc.status === 'ready');
+    const allSelected = readyDocs.every(doc => selectedSources.has(doc.id));
+    
+    if (allSelected) {
+      // Désélectionner tout
+      setSelectedSources(new Set());
+    } else {
+      // Sélectionner tout
+      setSelectedSources(new Set(readyDocs.map(doc => doc.id)));
+    }
+  };
 
   const formatFileSize = (bytes: number): string => {
     const units = ["B", "KB", "MB", "GB"];
@@ -151,6 +194,22 @@ export default function SourcesList({
       <div className="p-4 border-b">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">Sources</h2>
+          {documents.length > 0 && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleSelectAll}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {documents.filter(doc => doc.status === 'ready').every(doc => selectedSources.has(doc.id))
+                  ? 'Tout désélectionner'
+                  : 'Tout sélectionner'
+                }
+              </button>
+              <span className="text-xs text-muted-foreground">
+                {selectedSources.size} sélectionnée{selectedSources.size !== 1 ? 's' : ''}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -191,15 +250,25 @@ export default function SourcesList({
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <Checkbox 
+                        checked={selectedSources.has(doc.id)}
+                        onCheckedChange={(checked) => handleSourceToggle(doc.id, checked as boolean)}
+                        disabled={doc.status !== 'ready'}
+                        className="mt-1"
+                      />
                       {getFileIcon(doc.file_type)}
                       <div className="min-w-0 flex-1">
                         <h4
-                          className="text-sm font-medium truncate"
+                          className={`text-sm font-medium truncate ${
+                            selectedSources.has(doc.id) ? '' : 'opacity-60'
+                          }`}
                           title={doc.name}
                         >
                           {doc.name}
                         </h4>
-                        <p className="text-xs text-muted-foreground">
+                        <p className={`text-xs text-muted-foreground ${
+                          selectedSources.has(doc.id) ? '' : 'opacity-60'
+                        }`}>
                           {doc.file_type.toUpperCase()} •{" "}
                           {formatFileSize(doc.file_size)}
                         </p>

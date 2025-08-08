@@ -24,6 +24,7 @@ export default function ProjectDetailsPage() {
   const [projectLoading, setProjectLoading] = useState(true);
   const [projectError, setProjectError] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedSourceIds, setSelectedSourceIds] = useState<string[]>([]);
 
   // Check if this is an optimistic (temporary) project being created
   const isOptimisticProject = id.startsWith("temp_");
@@ -147,6 +148,10 @@ export default function ProjectDetailsPage() {
     refreshDocuments();
   };
 
+  const handleSelectedSourcesChange = (selectedIds: string[]) => {
+    setSelectedSourceIds(selectedIds);
+  };
+
   if (projectLoading) {
     return (
       <AuthGuard>
@@ -206,6 +211,7 @@ export default function ProjectDetailsPage() {
             loading={sourcesLoading}
             error={sourcesError}
             onAddSource={handleAddSource}
+            onSelectedSourcesChange={handleSelectedSourcesChange}
           />
           {/* TODO ✅ RÉALISÉ: 2/4 : Chat de discussion avec l'IA (au milieu) */}
           {/* TODO ✅ RÉALISÉ: Drag and drop pour ajouter des documents */}
@@ -213,6 +219,7 @@ export default function ProjectDetailsPage() {
           <ChatInterface
             hasSources={hasSources}
             onAddSource={handleAddSource}
+            selectedSourcesCount={selectedSourceIds.length}
           />
           {/* TODO ✅ RÉALISÉ: 1/4 : Actions (à droite) (créer un document) */}
           <ActionsPanel

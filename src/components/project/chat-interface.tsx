@@ -24,12 +24,14 @@ interface ChatMessage {
 interface ChatInterfaceProps {
   hasSources: boolean;
   onAddSource: () => void;
+  selectedSourcesCount?: number;
   className?: string;
 }
 
 export default function ChatInterface({
   hasSources,
   onAddSource,
+  selectedSourcesCount = 0,
   className,
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -200,8 +202,8 @@ Cette fonctionnalité de chat avec l'IA sera implémentée prochainement avec un
                   className={cn(
                     "max-w-[85%]",
                     message.type === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
+                      ? "bg-primary rounded-br-none text-primary-foreground"
+                      : "bg-muted rounded-bl-none"
                   )}
                 >
                   <CardContent className="p-3">
@@ -287,7 +289,10 @@ Cette fonctionnalité de chat avec l'IA sera implémentée prochainement avec un
           </Button>
         </div>
 
-        <span className="text-xs text-muted-foreground">X source</span>
+        <span className="text-xs text-muted-foreground">
+          {selectedSourcesCount} source{selectedSourcesCount !== 1 ? "s" : ""}{" "}
+          sélectionnée{selectedSourcesCount !== 1 ? "s" : ""}
+        </span>
       </div>
     </div>
   );

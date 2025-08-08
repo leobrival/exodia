@@ -113,9 +113,130 @@ GET /api/documents/[documentId]/status
 DELETE /api/documents/[documentId]
 ```
 
+### Project Notes
+
+#### Get Project Notes
+```http
+GET /api/projects/[projectId]/notes
+```
+
+```typescript
+// Response
+{
+  "notes": ProjectNote[],
+  "total_count": number,
+  "active_count": number
+}
+
+interface ProjectNote {
+  id: string;
+  project_id: string;
+  title: string;
+  content: string;
+  tags?: string[];
+  is_active: boolean;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+#### Create Project Note
+```http
+POST /api/projects/[projectId]/notes
+```
+
+```typescript
+// Request body
+{
+  "title": string,
+  "content": string,
+  "tags"?: string[],
+  "is_active"?: boolean // defaults to true
+}
+
+// Response
+{
+  "note": ProjectNote,
+  "embedding_generated": boolean
+}
+```
+
+#### Update Project Note
+```http
+PATCH /api/projects/[projectId]/notes/[noteId]
+```
+
+```typescript
+// Request body
+{
+  "title"?: string,
+  "content"?: string,
+  "tags"?: string[],
+  "is_active"?: boolean
+}
+```
+
+#### Delete Project Note
+```http
+DELETE /api/projects/[projectId]/notes/[noteId]
+```
+
+#### Toggle Note Active Status
+```http
+PATCH /api/projects/[projectId]/notes/[noteId]/toggle
+```
+
+```typescript
+// Request body
+{
+  "is_active": boolean
+}
+
+// Response
+{
+  "note": ProjectNote,
+  "rag_status": "included" | "excluded"
+}
+```
+
+#### Search Project Notes
+```http
+POST /api/projects/[projectId]/notes/search
+```
+
+```typescript
+// Request body
+{
+  "query": string,
+  "similarity_threshold"?: number,
+  "max_results"?: number,
+  "active_only"?: boolean // defaults to true
+}
+
+// Response
+{
+  "results": NoteSearchResult[],
+  "total_count": number
+}
+
+interface NoteSearchResult {
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  similarity: number;
+  source_type: "note";
+  metadata: {
+    created_at: string;
+    created_by: string;
+  };
+}
+```
+
 ### RAG System
 
-#### Chat with Documents
+#### Chat with Project Content (Documents + Notes)
 ```http
 POST /api/projects/[projectId]/chat
 ```
@@ -126,18 +247,44 @@ POST /api/projects/[projectId]/chat
   "message": string,
   "conversation_history"?: ChatMessage[],
   "model"?: "gpt-4o-mini" | "claude-3-5-sonnet",
-  "temperature"?: number
+  "temperature"?: number,
+  "include_documents"?: boolean, // defaults to true
+  "include_notes"?: boolean, // defaults to true
+  "similarity_threshold"?: number // defaults to 0.8
 }
 
 // Response (streaming)
 {
   "content": string,
-  "sources": DocumentSource[],
-  "token_count": number
+  "sources": ContentSource[],
+  "token_count": number,
+  "source_breakdown": {
+    "documents": number,
+    "notes": number
+  }
+}
+
+interface ContentSource {
+  id: string;
+  title: string;
+  content: string;
+  similarity: number;
+  source_type: "document" | "note";
+  metadata: {
+    // For documents
+    document_id?: string;
+    filename?: string;
+    chunk_index?: number;
+    mime_type?: string;
+    // For notes
+    tags?: string[];
+    created_at?: string;
+    created_by?: string;
+  };
 }
 ```
 
-#### Search Documents
+#### Search Project Content (Unified)
 ```http
 POST /api/projects/[projectId]/search
 ```
@@ -146,14 +293,40 @@ POST /api/projects/[projectId]/search
 // Request body
 {
   "query": string,
-  "similarity_threshold"?: number,
-  "max_results"?: number
+  "similarity_threshold"?: number, // defaults to 0.8
+  "max_results"?: number, // defaults to 20
+  "include_documents"?: boolean, // defaults to true
+  "include_notes"?: boolean, // defaults to true
+  "active_notes_only"?: boolean // defaults to true
 }
 
 // Response
 {
-  "results": SearchResult[],
-  "total_count": number
+  "results": UnifiedSearchResult[],
+  "total_count": number,
+  "breakdown": {
+    "documents": number,
+    "notes": number
+  }
+}
+
+interface UnifiedSearchResult {
+  id: string;
+  title: string;
+  content: string;
+  similarity: number;
+  source_type: "document" | "note";
+  metadata: {
+    // Document-specific
+    document_id?: string;
+    filename?: string;
+    chunk_index?: number;
+    mime_type?: string;
+    // Note-specific
+    tags?: string[];
+    created_at?: string;
+    created_by?: string;
+  };
 }
 ```
 
@@ -239,6 +412,73 @@ POST https://<project-ref>.supabase.co/functions/v1/generate-proposal
 POST https://<project-ref>.supabase.co/functions/v1/webhooks
 ```
 
+## Database Functions
+
+### Vector Search Functions
+
+#### search_project_content()
+Unified search across documents and project notes with vector similarity.
+
+```sql
+SELECT * FROM search_project_content(
+  query_embedding vector(1536),
+  project_uuid UUID,
+  match_threshold float DEFAULT 0.8,
+  match_count int DEFAULT 20
+);
+```
+
+**Returns:**
+- `id`: Content ID (document chunk or note)
+- `title`: Document filename or note title
+- `content`: Content text
+- `similarity`: Cosine similarity score (0-1)
+- `source_type`: "document" or "note"
+- `metadata`: JSON object with source-specific data
+
+#### search_documents()
+Search only document chunks with vector similarity.
+
+```sql
+SELECT * FROM search_documents(
+  query_embedding vector(1536),
+  project_uuid UUID,
+  match_threshold float DEFAULT 0.8,
+  match_count int DEFAULT 10
+);
+```
+
+#### search_notes()
+Search only project notes with vector similarity.
+
+```sql
+SELECT * FROM search_notes(
+  query_embedding vector(1536),
+  project_uuid UUID,
+  match_threshold float DEFAULT 0.8,
+  match_count int DEFAULT 10
+);
+```
+
+### Embedding Support
+
+All search functions work with OpenAI's `text-embedding-3-small` model (1536 dimensions).
+
+```typescript
+// Generate embeddings for search
+const embedding = await openai.embeddings.create({
+  model: "text-embedding-3-small",
+  input: searchQuery,
+});
+
+const results = await supabase.rpc('search_project_content', {
+  query_embedding: embedding.data[0].embedding,
+  project_uuid: projectId,
+  match_threshold: 0.8,
+  match_count: 20
+});
+```
+
 ## WebSocket Connections
 
 ### Real-time Presence
@@ -321,12 +561,26 @@ const response = await client.rag.chat(projectId, message);
 
 ### React Hooks
 ```typescript
-import { useProjects, useDocuments, useRAG } from '@exodia/react';
+import { 
+  useProjects, 
+  useDocuments, 
+  useProjectNotes,
+  useRAG,
+  useUnifiedSearch
+} from '@exodia/react';
 
 // Custom hooks for data fetching
 const { projects, loading } = useProjects(organizationId);
 const { documents } = useDocuments(projectId);
+const { 
+  notes, 
+  loading: notesLoading, 
+  activeNotesCount, 
+  totalNotesCount,
+  refreshNotes 
+} = useProjectNotes(projectId);
 const { chat, sendMessage } = useRAG(projectId);
+const { search, results, searching } = useUnifiedSearch(projectId);
 ```
 
 ## Webhooks
