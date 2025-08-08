@@ -2,9 +2,35 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { updateProject } from "@/lib/actions/projects";
-import { ArrowLeft, Check, Edit2, Settings, User, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Edit2,
+  ExternalLink,
+  Globe,
+  HelpCircle,
+  MessageCircle,
+  Monitor,
+  Moon,
+  Settings,
+  Sun,
+  User,
+  X,
+  Zap,
+} from "lucide-react";
+import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -26,8 +52,10 @@ export default function ProjectHeader({
   onProjectUpdate,
 }: ProjectHeaderProps) {
   const router = useRouter();
+  const { setTheme, theme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(project.name);
+  const [language, setLanguage] = useState<"fr" | "en">("fr");
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -140,16 +168,138 @@ export default function ProjectHeader({
       </div>
 
       <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          onClick={() =>
-            toast.info("Paramètres du projet - Fonctionnalité à venir")
-          }
-          className="flex items-center bg-transparent text-black gap-2 rounded-full"
-        >
-          <Settings className="h-4 w-4" />
-          Paramètres
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 rounded-full"
+            >
+              <Settings className="h-4 w-4" />
+              Paramètres
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem
+              onClick={() =>
+                window.open("https://notebooklm.google.com", "_blank")
+              }
+              className="cursor-pointer flex items-center gap-2"
+            >
+              <HelpCircle className="h-4 w-4" />
+              <span>Aide NotebookLM</span>
+              <ExternalLink className="h-3 w-3 ml-auto" />
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={() => toast.info("Fonctionnalité de feedback à venir")}
+              className="cursor-pointer flex items-center gap-2"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>Envoyer des commentaires</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={() => window.open("https://discord.gg/exodia", "_blank")}
+              className="cursor-pointer flex items-center gap-2"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>Discord</span>
+              <ExternalLink className="h-3 w-3 ml-auto" />
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="cursor-pointer flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                <span>Langue de sortie</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setLanguage("fr");
+                    toast.success("Langue changée vers Français");
+                  }}
+                  className="cursor-pointer flex items-center gap-2"
+                >
+                  <span className="text-base">🇫🇷</span>
+                  <span>Français</span>
+                  {language === "fr" && (
+                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setLanguage("en");
+                    toast.success("Language changed to English");
+                  }}
+                  className="cursor-pointer flex items-center gap-2"
+                >
+                  <span className="text-base">🇺🇸</span>
+                  <span>English</span>
+                  {language === "en" && (
+                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
+                  )}
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="cursor-pointer flex items-center gap-2">
+                <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span>Mode sombre</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem
+                  onClick={() => setTheme("light")}
+                  className="cursor-pointer flex items-center gap-2"
+                >
+                  <Sun className="h-4 w-4" />
+                  <span>Mode clair</span>
+                  {theme === "light" && (
+                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setTheme("dark")}
+                  className="cursor-pointer flex items-center gap-2"
+                >
+                  <Moon className="h-4 w-4" />
+                  <span>Mode sombre</span>
+                  {theme === "dark" && (
+                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setTheme("system")}
+                  className="cursor-pointer flex items-center gap-2"
+                >
+                  <Monitor className="h-4 w-4" />
+                  <span>Système</span>
+                  {theme === "system" && (
+                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
+                  )}
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem
+              onClick={() =>
+                toast.info("Upgrade vers Plus - Fonctionnalité à venir")
+              }
+              className="cursor-pointer flex items-center gap-2"
+            >
+              <Zap className="h-4 w-4" />
+              <span>Passer à Plus</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <Avatar className="h-10 w-10">
           <AvatarImage src="https://github.com/shadcn.png" />
           <AvatarFallback>

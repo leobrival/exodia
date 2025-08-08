@@ -53,9 +53,9 @@ export default function SourcesList({
       case "doc":
         return <FileText className="h-4 w-4 text-blue-500" />;
       case "txt":
-        return <FileText className="h-4 w-4 text-gray-500" />;
+        return <FileText className="h-4 w-4 text-muted-foreground" />;
       default:
-        return <FileText className="h-4 w-4 text-gray-400" />;
+        return <FileText className="h-4 w-4 text-muted-foreground/70" />;
     }
   };
 
@@ -63,7 +63,7 @@ export default function SourcesList({
     switch (status) {
       case "ready":
         return (
-          <Badge variant="default" className="bg-green-100 text-green-800">
+          <Badge variant="default" className="bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300">
             Prêt
           </Badge>
         );
@@ -71,7 +71,7 @@ export default function SourcesList({
         return (
           <Badge
             variant="secondary"
-            className="bg-yellow-100 text-yellow-800 flex items-center gap-1"
+            className="bg-yellow-500/10 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300 flex items-center gap-1"
           >
             <Loader2 className="h-3 w-3 animate-spin" />
             Traitement
@@ -81,7 +81,7 @@ export default function SourcesList({
         return (
           <Badge
             variant="destructive"
-            className="bg-red-100 text-red-800 flex items-center gap-1"
+            className="bg-destructive/10 text-destructive dark:bg-destructive/20 flex items-center gap-1"
           >
             <AlertCircle className="h-3 w-3" />
             Erreur
@@ -143,7 +143,7 @@ export default function SourcesList({
   }
 
   return (
-    <div className="min-h-full flex flex-col w-1/4 bg-white rounded-3xl text-black">
+    <div className="min-h-full flex flex-col w-1/4 bg-card rounded-3xl text-card-foreground">
       <div className="p-4 border-b">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base font-semibold">Sources</h2>

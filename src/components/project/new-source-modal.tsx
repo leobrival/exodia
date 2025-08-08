@@ -92,9 +92,9 @@ export default function NewSourceModal({
       case "application/msword":
         return <FileText className="h-5 w-5 text-blue-500" />;
       case "text/plain":
-        return <FileText className="h-5 w-5 text-gray-500" />;
+        return <FileText className="h-5 w-5 text-muted-foreground" />;
       default:
-        return <FileText className="h-5 w-5 text-gray-400" />;
+        return <FileText className="h-5 w-5 text-muted-foreground/70" />;
     }
   };
 
@@ -317,7 +317,7 @@ export default function NewSourceModal({
         return <Badge variant="default">Traitement...</Badge>;
       case "success":
         return (
-          <Badge variant="default" className="bg-green-100 text-green-800">
+          <Badge variant="default" className="bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300">
             Succès
           </Badge>
         );

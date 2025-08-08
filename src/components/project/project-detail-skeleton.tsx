@@ -3,9 +3,9 @@ import SourcesListSkeleton from "./sources-list-skeleton";
 
 export default function ProjectDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-[#edeffa] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header skeleton */}
-      <header className="bg-white border-b px-6 py-4">
+      <header className="bg-card border-b px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Back button */}
@@ -31,7 +31,7 @@ export default function ProjectDetailSkeleton() {
         <SourcesListSkeleton />
         
         {/* Chat interface skeleton - 2/4 */}
-        <div className="flex-1 bg-white rounded-3xl p-6">
+        <div className="flex-1 bg-card rounded-3xl p-6">
           <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
             <Skeleton className="h-16 w-16 rounded-full" />
             <Skeleton className="h-6 w-64" />
@@ -41,7 +41,7 @@ export default function ProjectDetailSkeleton() {
         </div>
         
         {/* Actions panel skeleton - 1/4 */}
-        <div className="w-1/4 bg-white rounded-3xl p-6">
+        <div className="w-1/4 bg-card rounded-3xl p-6">
           <div className="space-y-4">
             {/* Panel title */}
             <Skeleton className="h-5 w-24" />

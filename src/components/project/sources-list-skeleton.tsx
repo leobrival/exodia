@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SourcesListSkeleton() {
   return (
-    <div className="min-h-full flex flex-col w-1/4 bg-white rounded-3xl text-black">
+    <div className="min-h-full flex flex-col w-1/4 bg-card rounded-3xl text-card-foreground">
       <div className="p-4 border-b">
         <div className="flex items-center justify-between mb-2">
           <Skeleton className="h-5 w-16" />

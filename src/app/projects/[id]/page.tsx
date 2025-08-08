@@ -105,7 +105,7 @@ export default function ProjectDetailsPage() {
   if (projectError || !project) {
     return (
       <AuthGuard>
-        <div className="min-h-screen bg-[#edeffa] flex items-center justify-center">
+        <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-red-600 mb-2">Erreur</h1>
             <p className="text-muted-foreground">
@@ -128,7 +128,7 @@ export default function ProjectDetailsPage() {
         onUploadComplete={handleUploadComplete}
       />
 
-      <div className="min-h-screen bg-[#edeffa] flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         {/* TODO ✅ RÉALISÉ: Nav bar avec le nom du projet (avec possibilité de modifier le nom) et le bouton pour revenir à la liste des projets, avec un bouton action (supprimer le projet) */}
         <ProjectHeader
           project={project}
