@@ -2,21 +2,23 @@
 
 import { AuthGuard, UserNav } from "@/components/auth/user-nav";
 import { RealtimeDebug } from "@/components/debug/realtime-debug";
-import ProjectCard from "@/components/project/project-card";
-import ProjectCardSkeleton from "@/components/project/project-card-skeleton";
-import NewProjectCard from "@/components/project/new-project-card";
-import CreateProjectModal from "@/components/project/create-project-modal";
+import ProjectsToolbar from "@/components/project/projects-toolbar";
+import ProjectsView from "@/components/project/projects-view";
 import { ConnectionIndicator } from "@/components/realtime/connection-indicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useProjectsParams } from "@/hooks/use-projects-params";
 import { useProjectsStore } from "@/stores/projects";
 import { useAuthStore } from "@/stores/auth";
-import { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 function ProjectsPage() {
-  const { projects, loadProjects, isLoadingProjects, isRealtimeEnabled } = useProjectsStore();
+  const { projects, loadProjects, isLoadingProjects, isRealtimeEnabled, createQuickProject, isCreatingProject } = useProjectsStore();
   const { initialized, isAuthenticated, user, loading } = useAuthStore();
-  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const { viewMode, sortBy, sortOrder } = useProjectsParams();
+  const router = useRouter();
 
   // Load projects when user is authenticated and initialized
   useEffect(() => {
@@ -25,22 +27,39 @@ function ProjectsPage() {
     }
   }, [loadProjects, initialized, isAuthenticated]);
 
-  // ✅ TODO : La liste des projets doit être triée par date de création
-  const sortedProjects = useMemo(() => {
-    return [...projects].sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-  }, [projects]);
 
-  const handleCreateProject = () => {
-    setCreateModalOpen(true);
-  };
-
-  const handleProjectCreated = () => {
-    // The project is already added through the store's createNewProject method
-    // which handles optimistic updates and real-time sync
-    setCreateModalOpen(false);
+  const handleCreateProject = async () => {
+    console.log('[ProjectsPage] handleCreateProject called, isCreatingProject:', isCreatingProject)
+    
+    if (isCreatingProject) {
+      console.log('[ProjectsPage] Project creation already in progress, ignoring click')
+      return; // Prevent double clicks
+    }
+    
+    try {
+      console.log('[ProjectsPage] Starting project creation...')
+      const result = await createQuickProject();
+      
+      console.log('[ProjectsPage] Project creation result:', {
+        success: result.success,
+        projectId: result.project?.id,
+        error: result.error
+      })
+      
+      if (result.success && result.project) {
+        // Navigate to the project detail page with auto-open sources modal
+        const targetUrl = `/projects/${result.project.id}?openSources=true`
+        console.log('[ProjectsPage] Navigating to:', targetUrl)
+        router.push(targetUrl);
+        toast.success("Projet créé avec succès !");
+      } else {
+        console.error('[ProjectsPage] Project creation failed:', result.error)
+        toast.error(result.error || "Erreur lors de la création du projet");
+      }
+    } catch (error) {
+      console.error("[ProjectsPage] Exception in handleCreateProject:", error);
+      toast.error("Erreur inattendue lors de la création du projet");
+    }
   };
 
   const handleProjectUpdated = () => {
@@ -74,7 +93,7 @@ function ProjectsPage() {
 
         {/* Main Content */}
         <main className="pt-8 pb-40 px-[10vw]">
-          <div className="grid gap-6">
+          <div className="space-y-6">
             {/* Real-time Debug (Development only) */}
             {process.env.NODE_ENV === "development" && (
               <RealtimeDebug className="mb-4" />
@@ -126,41 +145,29 @@ function ProjectsPage() {
               </Card>
             )}
 
-            {/* Projects List */}
-            {/* ✅ TODO : La liste des projets doit être triée par date de création */}
-            {/* ✅ TODO : Le premier projet doit être un bouton pour "Créer un nouveau projet"  */}
+            {/* Toolbar - Only show when there are projects or loading */}
             {(projects.length > 0 || isLoadingProjects) && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {/* New Project Card - Always first when there are projects */}
-                {!isLoadingProjects && (
-                  <NewProjectCard onClick={handleCreateProject} />
-                )}
+              <ProjectsToolbar
+                projectsCount={projects.length}
+                onCreateProject={handleCreateProject}
+              />
+            )}
 
-                {/* Existing Projects */}
-                {sortedProjects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    onProjectUpdated={handleProjectUpdated}
-                    onProjectDeleted={handleProjectDeleted}
-                  />
-                ))}
-
-                {isLoadingProjects && 
-                  Array.from({ length: 6 }, (_, i) => (
-                    <ProjectCardSkeleton key={`skeleton-${i}`} />
-                  ))
-                }
-              </div>
+            {/* Projects View */}
+            {(projects.length > 0 || isLoadingProjects) && (
+              <ProjectsView
+                projects={projects}
+                isLoading={isLoadingProjects}
+                viewMode={viewMode}
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onCreateProject={handleCreateProject}
+                onProjectUpdated={handleProjectUpdated}
+                onProjectDeleted={handleProjectDeleted}
+              />
             )}
           </div>
         </main>
-
-        <CreateProjectModal
-          open={createModalOpen}
-          onOpenChange={setCreateModalOpen}
-          onProjectCreated={handleProjectCreated}
-        />
       </div>
     </AuthGuard>
   );

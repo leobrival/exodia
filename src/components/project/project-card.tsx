@@ -71,7 +71,7 @@ export default function ProjectCard({
         className="block aspect-[3/2] h-full w-full"
       >
         <Card
-          className={`cursor-pointer select-none border-none rounded-xl aspect-[3/2] ${theme.bgLight} dark:${theme.bgDark}`}
+          className={`cursor-pointer select-none border-none rounded-xl aspect-[3/2] shadow-none ${theme.bgLight} dark:${theme.bgDark}`}
         >
           <CardHeader className="flex-1">
             <div className="flex items-start justify-between">
@@ -98,7 +98,9 @@ export default function ProjectCard({
               </div>
             </CardContent>
             <CardFooter>
-              <div className="text-sm text-muted-foreground">
+              <div
+                className={`text-sm ${theme.textLight}/75 dark:${theme.textDark}/75`}
+              >
                 {/* ✅ TODO : Si le nombre de sources est de 0 ou 1 mettre les textes au singulier */}
                 {/* ✅ TODO : Le format de date sera 18 mai 2025 */}
                 {formatProjectDate(project.created_at)} •{" "}

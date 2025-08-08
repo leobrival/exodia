@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -17,6 +17,7 @@ import { getProjectById, type Project } from "@/lib/actions/projects";
 
 export default function ProjectDetailsPage() {
   const params = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
   const { id } = params;
 
   const [project, setProject] = useState<Project | null>(null);
@@ -69,13 +70,21 @@ export default function ProjectDetailsPage() {
     fetchProject();
   }, [id]);
 
-  // TODO ✅ RÉALISÉ: check if project has sources; for now always open on first render
-  // TODO ✅ RÉALISÉ: Dès l'ouverture de la page, ouvrir la modal d'ajout de source dans le cas ou aucune source n'est présente (60vw)
+  // Auto-open sources modal based on URL parameter or no sources
   useEffect(() => {
+    const openSources = searchParams.get('openSources');
+    
+    // Force open if URL parameter is present
+    if (openSources === 'true' && !projectLoading && project && !projectError) {
+      setModalOpen(true);
+      return;
+    }
+    
+    // Default behavior: open if no sources
     if (!sourcesLoading && !hasSources && project) {
       setModalOpen(true);
     }
-  }, [sourcesLoading, hasSources, project]);
+  }, [searchParams, projectLoading, project, projectError, sourcesLoading, hasSources]);
 
   const handleProjectUpdate = (updatedProject: {
     name: string;

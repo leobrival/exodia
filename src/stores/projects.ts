@@ -3,6 +3,7 @@
 import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { Project, Organization, CreateProjectData, getUserProjects, getUserOrganizations, createProject } from '@/lib/actions/projects'
+import { createQuickProject, type QuickProjectResult } from '@/lib/actions/quick-project'
 import { useRealtimeStore, createOptimisticUpdate, mergeWithOptimisticUpdates } from '@/stores/realtime-base'
 import { getRealtimeManager } from '@/lib/supabase/realtime'
 import { ProjectChanges, OrganizationChanges, CHANNEL_TOPICS } from '@/types/realtime'
@@ -33,6 +34,7 @@ interface ProjectsState {
   loadProjects: (force?: boolean) => Promise<void>
   loadOrganizations: (force?: boolean) => Promise<void>
   createNewProject: (projectData: CreateProjectData) => Promise<{ success: boolean; project?: Project; error?: string }>
+  createQuickProject: () => Promise<QuickProjectResult>
   invalidateProjectsCache: () => void
   invalidateOrganizationsCache: () => void
   
@@ -226,6 +228,45 @@ export const useProjectsStore = create<ProjectsState>()(
         }))
         return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
       } finally {
+        set({ isCreatingProject: false })
+      }
+    },
+
+    // Quick project creation without modal
+    createQuickProject: async () => {
+      console.log('[ProjectsStore] Starting createQuickProject action...')
+      set({ isCreatingProject: true })
+      
+      try {
+        console.log('[ProjectsStore] Calling createQuickProject server action...')
+        const result = await createQuickProject()
+        
+        console.log('[ProjectsStore] Server action result:', { 
+          success: result.success, 
+          projectId: result.project?.id,
+          error: result.error 
+        })
+        
+        if (result.success && result.project) {
+          // Add the new project to the store
+          const { projects } = get()
+          console.log('[ProjectsStore] Adding new project to store, current projects:', projects.length)
+          set({ projects: [result.project, ...projects] })
+          
+          // Invalidate cache to ensure consistency
+          set({ lastProjectsLoad: undefined })
+          console.log('[ProjectsStore] Project added successfully, new total:', projects.length + 1)
+        } else {
+          console.error('[ProjectsStore] Project creation failed:', result.error)
+        }
+        
+        return result
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
+        console.error('[ProjectsStore] Exception in createQuickProject:', err)
+        return { success: false, error: errorMessage }
+      } finally {
+        console.log('[ProjectsStore] Finished createQuickProject action')
         set({ isCreatingProject: false })
       }
     },
