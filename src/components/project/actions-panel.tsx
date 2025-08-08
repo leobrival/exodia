@@ -59,11 +59,11 @@ export default function ActionsPanel({
 
   return (
     <div
-      className={`min-h-full flex flex-col w-1/4 rounded-3xl bg-white relative text-black ${
+      className={`min-h-full flex flex-col w-1/4 rounded-3xl bg-card relative text-card-foreground ${
         className || ""
       }`}
     >
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-border">
         <h2 className="text-base font-semibold">Actions</h2>
       </div>
 
@@ -94,7 +94,7 @@ export default function ActionsPanel({
         </Card>
       </div>
 
-      <Separator className="bg-gray-200" />
+      <Separator />
 
       <div className="flex-1 overflow-y-auto p-4 gap-2 flex flex-col items-center justify-center">
         {!hasSources && (

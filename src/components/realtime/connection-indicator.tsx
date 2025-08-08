@@ -29,7 +29,7 @@ export function ConnectionIndicator({
     if (isConnected) return 'bg-green-500'
     if (isConnecting || isReconnecting) return 'bg-yellow-500'
     if (hasError) return 'bg-red-500'
-    return 'bg-gray-500'
+    return 'bg-muted-foreground'
   }
 
   const getStatusText = () => {

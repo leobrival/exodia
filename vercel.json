@@ -3,7 +3,6 @@
   "devCommand": "pnpm dev",
   "installCommand": "pnpm install",
   "framework": "nextjs",
-  "nodejs": "18.x",
   "regions": ["cdg1"],
   "functions": {
     "src/app/**/*.{js,ts,jsx,tsx}": {
