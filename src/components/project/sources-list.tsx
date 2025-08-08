@@ -12,6 +12,7 @@ import {
   Loader2,
   Plus,
   Trash2,
+  Wand,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -146,11 +147,28 @@ export default function SourcesList({
   }
 
   return (
-    <div className="min-h-full flex flex-col w-1/4 bg-card rounded-3xl text-card-foreground">
+    <div className="min-h-full flex flex-col w-1/4 bg-card rounded-2xl text-card-foreground">
       <div className="p-4 border-b">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">Sources</h2>
         </div>
+      </div>
+
+      <div className="flex w-full items-center gap-2 p-4">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2 rounded-full bg-card hover:bg-card/90 duration-300 cursor-pointer border-gray-200 transition-all shadow-none"
+        >
+          <Plus className="h-4 w-4" />
+          Ajouter
+        </Button>
+        <Button
+          variant="outline"
+          className="flex items-center gap-2 rounded-full bg-card hover:bg-card/90 duration-300 cursor-pointer border-gray-200 transition-all shadow-none"
+        >
+          <Wand className="h-4 w-4" />
+          Découvrir
+        </Button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">

@@ -115,13 +115,12 @@ export default function ProjectHeader({
     <header className="h-16 flex items-center justify-between px-6">
       <div className="flex items-center gap-4">
         <Button
-          variant="ghost"
-          size="sm"
+          variant="outline"
           onClick={() => router.push("/projects")}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 rounded-full bg-card hover:bg-card/90 duration-300 cursor-pointer border-none transition-all shadow-none"
         >
           <ArrowLeft className="h-4 w-4" />
-          Retour aux projets
+          Retour
         </Button>
 
         <div className="flex items-center gap-2">
@@ -172,7 +171,7 @@ export default function ProjectHeader({
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="flex items-center gap-2 rounded-full"
+              className="flex items-center gap-2 rounded-full bg-card hover:bg-card/90 duration-300 cursor-pointer border-none transition-all shadow-none"
             >
               <Settings className="h-4 w-4" />
               Paramètres

@@ -333,7 +333,7 @@ export default function NewSourceModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[70vw] max-h-[80vh] flex flex-col rounded-3xl bg-card">
+      <DialogContent className="sm:max-w-[70vw] max-h-[80vh] flex flex-col rounded-2xl bg-card shadow-none border-none">
         <DialogHeader>
           <DialogTitle>Importer des sources</DialogTitle>
           <DialogDescription className="text-base">

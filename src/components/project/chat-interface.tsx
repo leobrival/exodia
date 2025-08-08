@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { FileText, MessageSquare, Paperclip, Send, Upload } from "lucide-react";
+import { MessageSquare, Paperclip, Send, Upload } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
@@ -120,13 +120,16 @@ Cette fonctionnalité de chat avec l'IA sera implémentée prochainement avec un
       <div
         {...getRootProps()}
         className={cn(
-          "min-h-full flex-1 flex flex-col items-center bg-card rounded-3xl text-foreground justify-center text-center p-8 border-2 border-dashed transition-colors",
+          "min-h-full flex-1 flex flex-col bg-card rounded-2xl text-foreground justify-between transition-colors",
           isDragActive
             ? "border-primary bg-primary/5"
             : "border-muted-foreground/25",
           className
         )}
       >
+        <div className="p-4 border-b border-border">
+          <h2 className="text-base font-semibold">Discussion</h2>
+        </div>
         <input {...getInputProps()} />
         <div className="flex flex-col items-center gap-4">
           <div className="p-4 rounded-full bg-muted">
@@ -163,10 +166,13 @@ Cette fonctionnalité de chat avec l'IA sera implémentée prochainement avec un
   return (
     <div
       className={cn(
-        "min-h-full flex-1 flex flex-col bg-card text-foreground rounded-3xl",
+        "min-h-full flex-1 flex flex-col bg-card text-foreground rounded-2xl",
         className
       )}
     >
+      <div className="p-4 border-b border-border">
+        <h2 className="text-base font-semibold">Discussion</h2>
+      </div>
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
@@ -281,12 +287,7 @@ Cette fonctionnalité de chat avec l'IA sera implémentée prochainement avec un
           </Button>
         </div>
 
-        <div className="flex items-center gap-2 mt-2">
-          <FileText className="h-3 w-3 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground">
-            Sources disponibles pour l'IA
-          </span>
-        </div>
+        <span className="text-xs text-muted-foreground">X source</span>
       </div>
     </div>
   );

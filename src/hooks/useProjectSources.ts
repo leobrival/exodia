@@ -42,7 +42,8 @@ export function useProjectSources(projectId: string | null): UseProjectSourcesRe
 
       const documentsList = data || [];
       setDocuments(documentsList);
-      setHasSources(documentsList.filter(doc => doc.status === 'ready').length > 0);
+      // Considérer qu'il y a des sources si des documents existent (sauf erreurs)
+      setHasSources(documentsList.filter(doc => doc.status !== 'error').length > 0);
 
       console.log('[useProjectSources] Documents loaded:', {
         total: documentsList.length,

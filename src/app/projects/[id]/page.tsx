@@ -26,8 +26,8 @@ export default function ProjectDetailsPage() {
   const [isModalOpen, setModalOpen] = useState(false);
 
   // Check if this is an optimistic (temporary) project being created
-  const isOptimisticProject = id.startsWith('temp_');
-  const isCreating = searchParams.get('creating') === 'true';
+  const isOptimisticProject = id.startsWith("temp_");
+  const isCreating = searchParams.get("creating") === "true";
 
   // Hook pour gérer les sources du projet
   const {
@@ -44,18 +44,20 @@ export default function ProjectDetailsPage() {
 
       // If this is an optimistic project being created, show loading state but don't fetch
       if (isOptimisticProject) {
-        console.log('[ProjectDetailsPage] Optimistic project detected, showing creation loading...');
+        console.log(
+          "[ProjectDetailsPage] Optimistic project detected, showing creation loading..."
+        );
         setProjectLoading(true);
         setProjectError(null);
         // Create a temporary project object for display
         setProject({
           id,
-          name: 'Untitled project',
-          description: '',
-          organization_id: '',
-          slug: '',
-          status: 'draft',
-          created_by: '',
+          name: "Untitled project",
+          description: "",
+          organization_id: "",
+          slug: "",
+          status: "draft",
+          created_by: "",
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         });
@@ -94,24 +96,39 @@ export default function ProjectDetailsPage() {
     fetchProject();
   }, [id, isOptimisticProject]);
 
-  // Auto-open sources modal based on URL parameter or no sources
+  // Auto-open sources modal only when no sources exist
   useEffect(() => {
-    const openSources = searchParams.get('openSources');
+    console.log('[ProjectDetailsPage] Modal logic evaluation:', {
+      projectLoading,
+      project: !!project,
+      projectError,
+      sourcesLoading,
+      hasSources,
+      documents: documents.length,
+      willOpenModal: !projectLoading && project && !projectError && !sourcesLoading && !hasSources
+    });
     
-    // Open modal if:
-    // 1. URL parameter is present AND no sources exist, OR
-    // 2. Default behavior: project loaded but no sources
+    // Open modal only if project loaded and no sources exist
     if (
-      !projectLoading && 
-      project && 
-      !projectError && 
-      !sourcesLoading && 
-      !hasSources &&
-      (openSources === 'true' || !searchParams.has('openSources'))
+      !projectLoading &&
+      project &&
+      !projectError &&
+      !sourcesLoading &&
+      !hasSources
     ) {
+      console.log('[ProjectDetailsPage] 🚨 OPENING MODAL - Reason: No sources detected');
+      console.log('[ProjectDetailsPage] Conditions met:', {
+        'NOT projectLoading': !projectLoading,
+        'project exists': !!project,  
+        'NOT projectError': !projectError,
+        'NOT sourcesLoading': !sourcesLoading,
+        'NOT hasSources': !hasSources
+      });
       setModalOpen(true);
+    } else {
+      console.log('[ProjectDetailsPage] ✅ Modal NOT opening - at least one condition failed');
     }
-  }, [searchParams, projectLoading, project, projectError, sourcesLoading, hasSources]);
+  }, [projectLoading, project, projectError, sourcesLoading, hasSources, documents.length]);
 
   const handleProjectUpdate = (updatedProject: {
     name: string;
@@ -182,7 +199,7 @@ export default function ProjectDetailsPage() {
 
         {/* TODO ✅ RÉALISÉ: Afficher le projet dans la page */}
         {/* TODO ✅ RÉALISÉ: Diviser la page en 3 colonnes : */}
-        <main className="flex flex-1 w-full overflow-hidden px-6 gap-6">
+        <main className="flex flex-1 w-full overflow-hidden px-6 gap-4">
           {/* TODO ✅ RÉALISÉ: 1/4 : Liste des sources (à gauche) */}
           <SourcesList
             documents={documents}

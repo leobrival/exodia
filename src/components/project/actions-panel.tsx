@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
+  AudioLines,
   FileText,
-  MessageSquare,
   Pencil,
-  Play,
+  SquaresSubtract,
   WandSparkles,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -59,7 +59,7 @@ export default function ActionsPanel({
 
   return (
     <div
-      className={`min-h-full flex flex-col w-1/4 rounded-3xl bg-card relative text-card-foreground ${
+      className={`min-h-full flex flex-col w-1/4 rounded-2xl bg-card relative text-card-foreground ${
         className || ""
       }`}
     >
@@ -68,27 +68,27 @@ export default function ActionsPanel({
       </div>
 
       <div className="grid grid-cols-2 gap-4 p-4">
-        <Card className="flex aspect-video p-3 justify-center shadow-none">
-          <h3 className="font-normal text-base flex flex-col gap-2">
-            <Play className="h-6 w-6" />
+        <Card className="flex aspect-video p-3 justify-center shadow-none border-none bg-blue-950/10 text-blue-900 hover:bg-blue-950/30 transition-colors cursor-pointer duration-300 rounded-2xl">
+          <h3 className="text-xs flex flex-col gap-3 font-semibold">
+            <AudioLines className="h-5 w-5" />
             Résumé audio
           </h3>
         </Card>
-        <Card className="flex aspect-video p-3 justify-center shadow-none">
-          <h3 className="font-normal text-base flex flex-col gap-2">
-            <MessageSquare className="h-6 w-6" />
+        <Card className="flex aspect-video p-3 justify-center shadow-none border-none bg-green-950/10 text-green-900 hover:bg-green-950/30 transition-colors cursor-pointer duration-300 rounded-2xl">
+          <h3 className="text-xs flex flex-col gap-3 font-semibold">
+            <SquaresSubtract className="h-5 w-5" />
             Questions
           </h3>
         </Card>
-        <Card className="flex aspect-video p-3 justify-center shadow-none">
-          <h3 className="font-normal text-base flex flex-col gap-2">
-            <FileText className="h-6 w-6" />
+        <Card className="flex aspect-video p-3 justify-center shadow-none border-none bg-pink-950/10 text-pink-900 hover:bg-pink-950/30 transition-colors cursor-pointer duration-300 rounded-2xl">
+          <h3 className="text-xs flex flex-col gap-3 font-semibold">
+            <FileText className="h-5 w-5" />
             Rapport
           </h3>
         </Card>
-        <Card className="flex aspect-video p-3 justify-center shadow-none">
-          <h3 className="font-normal text-base flex flex-col gap-2">
-            <FileText className="h-6 w-6" />
+        <Card className="flex aspect-video p-3 justify-center shadow-none border-none bg-yellow-950/10 text-yellow-900 hover:bg-yellow-950/30 transition-colors cursor-pointer duration-300 rounded-2xl">
+          <h3 className="text-xs flex flex-col gap-3 font-semibold">
+            <FileText className="h-5 w-5" />
             Synthèse
           </h3>
         </Card>

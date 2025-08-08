@@ -24,9 +24,9 @@
 }
 
 .dark {
-  --color-background: hsl(222.2 84% 4.9%);
+  --color-background: #37383b;
   --color-foreground: hsl(210 40% 98%);
-  --color-card: hsl(222.2 84% 4.9%); /* ✅ TODO : Remplacer par un theme */
+  --color-card: #22262c;
   --color-card-foreground: hsl(210 40% 98%);
   --color-popover: hsl(222.2 84% 4.9%);
   --color-popover-foreground: hsl(210 40% 98%);

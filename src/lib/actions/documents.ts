@@ -135,6 +135,18 @@ export async function createDocument(documentData: CreateDocumentData): Promise<
     }
     
     console.log('[createDocument] Success! Document created:', data.id)
+    
+    // Auto-ready pour les fichiers texte simples qui n'ont pas besoin de traitement complexe
+    if (['txt', 'md'].includes(documentData.file_type.toLowerCase())) {
+      console.log('[createDocument] Auto-setting text file to ready status:', data.id)
+      const { data: updatedDoc, error: updateError } = await updateDocumentStatus(data.id, 'ready')
+      if (!updateError && updatedDoc) {
+        return updatedDoc
+      }
+      // Si erreur de mise à jour, continuer avec le document initial
+      console.warn('[createDocument] Failed to auto-update status, returning original document:', updateError)
+    }
+    
     return data as unknown as Document
   }, 'createDocument', documentData)
   
