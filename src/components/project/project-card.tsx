@@ -71,36 +71,32 @@ export default function ProjectCard({
         className="block aspect-[3/2] h-full w-full"
       >
         <Card
-          className={`cursor-pointer select-none border-none rounded-xl aspect-[3/2] shadow-none ${theme.bgLight} dark:${theme.bgDark}`}
+          className={`cursor-pointer w-full h-full select-none border-none rounded-xl aspect-[3/2] shadow-none ${theme.bgLight} ${theme.bgDark}`}
         >
-          <CardHeader className="flex-1">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <span className="text-5xl">{theme.emoji}</span>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <ProjectActionsMenu
-                  project={project}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
-              </div>
+          <CardHeader className="flex-1 flex items-start justify-between">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <span className="text-5xl">{theme.emoji}</span>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <ProjectActionsMenu
+                project={project}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
             </div>
           </CardHeader>
-          <div>
+          <div className="flex-1 flex flex-col justify-between">
             <CardContent className="px-6 pt-0 pb-2">
               <div className="min-w-0 flex-1">
                 <h3
-                  className={`${theme.textLight} dark:${theme.textDark} font-medium text-2xl line-clamp-2 leading-tight`}
+                  className={`text-foreground font-medium text-2xl line-clamp-2 leading-tight`}
                 >
                   {project.name}
                 </h3>
               </div>
             </CardContent>
             <CardFooter>
-              <div
-                className={`text-sm ${theme.textLight}/75 dark:${theme.textDark}/75`}
-              >
+              <div className={`text-sm opacity-75 text-foreground`}>
                 {/* ✅ TODO : Si le nombre de sources est de 0 ou 1 mettre les textes au singulier */}
                 {/* ✅ TODO : Le format de date sera 18 mai 2025 */}
                 {formatProjectDate(project.created_at)} •{" "}

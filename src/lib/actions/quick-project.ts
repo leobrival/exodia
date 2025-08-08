@@ -19,21 +19,8 @@ export interface CreateOrgRpcResult {
 /**
  * Server-side version of getUserOrganizations for server actions
  */
-async function getUserOrganizationsServer(userId: string, cookieStore: any): Promise<{ data: Organization[] | null; error: any }> {
+async function getUserOrganizationsServer(userId: string, supabase: any): Promise<{ data: Organization[] | null; error: any }> {
   const result = await withErrorHandling(async () => {
-    const supabase = createServerClient({
-      get: (key: string) => {
-        const cookie = cookieStore.get(key)
-        return cookie ? { value: cookie.value } : null
-      },
-      set: (key: string, value: string, options?: any) => {
-        cookieStore.set(key, value, options)
-      },
-      remove: (key: string, options?: any) => {
-        cookieStore.delete(key)
-      },
-    })
-
     console.log('[getUserOrganizationsServer] Fetching organizations for user:', { userId })
 
     // SIMPLIFIED: Get organizations created by the user directly
@@ -71,21 +58,8 @@ async function getUserOrganizationsServer(userId: string, cookieStore: any): Pro
 /**
  * Server-side version of createProject for server actions
  */
-async function createProjectServer(projectData: CreateProjectData, userId: string, cookieStore: any): Promise<{ data: Project | null; error: any }> {
+async function createProjectServer(projectData: CreateProjectData, userId: string, supabase: any): Promise<{ data: Project | null; error: any }> {
   const result = await withErrorHandling(async () => {
-    const supabase = createServerClient({
-      get: (key: string) => {
-        const cookie = cookieStore.get(key)
-        return cookie ? { value: cookie.value } : null
-      },
-      set: (key: string, value: string, options?: any) => {
-        cookieStore.set(key, value, options)
-      },
-      remove: (key: string, options?: any) => {
-        cookieStore.delete(key)
-      },
-    })
-    
     console.log('[createProjectServer] Starting with:', projectData, 'userId:', userId)
 
     // Générer un slug unique
@@ -148,48 +122,12 @@ async function createProjectServer(projectData: CreateProjectData, userId: strin
 /**
  * Server-side version of createDefaultOrganization for server actions
  */
-async function createDefaultOrganizationServer(userId: string, userEmail: string, cookieStore: any): Promise<{ data: Organization | null; error: any }> {
+async function createDefaultOrganizationServer(userId: string, userEmail: string, supabase: any): Promise<{ data: Organization | null; error: any }> {
   const result = await withErrorHandling(async () => {
     console.log('[createDefaultOrganizationServer] Starting with:', { userId, userEmail })
     
-    const supabase = createServerClient({
-      get: (key: string) => {
-        const cookie = cookieStore.get(key)
-        return cookie ? { value: cookie.value } : null
-      },
-      set: (key: string, value: string, options?: any) => {
-        cookieStore.set(key, value, options)
-      },
-      remove: (key: string, options?: any) => {
-        cookieStore.delete(key)
-      },
-    })
-
-    // Vérifier l'authentification
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    console.log('[createDefaultOrganizationServer] Auth check:', { user: user?.id, authError })
-    
-    if (authError) {
-      const serializedError = logError('createDefaultOrganizationServer:auth', authError, { 
-        step: 'authentication',
-        userId,
-        userEmail 
-      })
-      throw new Error(`Authentication failed: ${serializedError.message}`)
-    }
-    
-    if (!user) {
-      console.error('[createDefaultOrganizationServer] No authenticated user')
-      throw new Error('No authenticated user')
-    }
-    
-    if (user.id !== userId) {
-      console.error('[createDefaultOrganizationServer] User ID mismatch:', { expected: userId, actual: user.id })
-      throw new Error('User ID mismatch - authentication error')
-    }
-
     // Vérifier si l'utilisateur a déjà une organisation
-    const { data: existingOrgs } = await getUserOrganizationsServer(userId, cookieStore)
+    const { data: existingOrgs } = await getUserOrganizationsServer(userId, supabase)
     if (existingOrgs && existingOrgs.length > 0) {
       console.log('[createDefaultOrganizationServer] User already has organizations:', existingOrgs.length)
       return existingOrgs[0] // Return first organization
@@ -263,12 +201,12 @@ async function createDefaultOrganizationServer(userId: string, userEmail: string
 /**
  * Récupère ou crée une organisation par défaut pour l'utilisateur
  */
-async function getOrCreateDefaultOrganization(userId: string, userEmail: string, cookieStore: any): Promise<{ success: boolean; organizationId?: string; error?: string }> {
+async function getOrCreateDefaultOrganization(userId: string, userEmail: string, supabase: any): Promise<{ success: boolean; organizationId?: string; error?: string }> {
   try {
     console.log('[getOrCreateDefaultOrganization] Starting with:', { userId, userEmail })
     
     // D'abord, essayer de récupérer les organisations existantes
-    const { data: organizations, error: orgError } = await getUserOrganizationsServer(userId, cookieStore)
+    const { data: organizations, error: orgError } = await getUserOrganizationsServer(userId, supabase)
     
     if (orgError) {
       const serializedError = logError('getOrCreateDefaultOrganization:getUserOrganizations', orgError, { userId })
@@ -285,7 +223,7 @@ async function getOrCreateDefaultOrganization(userId: string, userEmail: string,
     
     // Sinon, créer une organisation par défaut
     console.log('[getOrCreateDefaultOrganization] Creating new organization for user:', userId)
-    const { data: newOrg, error: createError } = await createDefaultOrganizationServer(userId, userEmail, cookieStore)
+    const { data: newOrg, error: createError } = await createDefaultOrganizationServer(userId, userEmail, supabase)
     
     if (createError) {
       const serializedError = logError('getOrCreateDefaultOrganization:createDefaultOrganizationServer', createError, { userId, email: userEmail })
@@ -312,9 +250,9 @@ async function getOrCreateDefaultOrganization(userId: string, userEmail: string,
  */
 export async function createQuickProject(): Promise<QuickProjectResult> {
   try {
-    console.log('[createQuickProject] Starting quick project creation...')
+    console.log('[createQuickProject] Starting optimized quick project creation...')
     
-    // Vérifier l'authentification
+    // Créer le client Supabase une seule fois et le réutiliser
     const cookieStore = await cookies()
     const supabase = createServerClient({
       get: (key: string) => {
@@ -329,6 +267,7 @@ export async function createQuickProject(): Promise<QuickProjectResult> {
       },
     })
     
+    // Vérification d'authentification unique
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     
     if (authError || !user) {
@@ -344,9 +283,9 @@ export async function createQuickProject(): Promise<QuickProjectResult> {
     
     console.log('[createQuickProject] Authenticated user:', { id: user.id, email: user.email })
     
-    // Récupérer ou créer l'organisation par défaut
+    // Récupérer ou créer l'organisation par défaut (réutilise le même client)
     console.log('[createQuickProject] Getting or creating default organization...')
-    const orgResult = await getOrCreateDefaultOrganization(user.id, user.email, cookieStore)
+    const orgResult = await getOrCreateDefaultOrganization(user.id, user.email, supabase)
     if (!orgResult.success || !orgResult.organizationId) {
       console.error('[createQuickProject] Failed to get organization:', orgResult.error)
       return { success: false, error: orgResult.error || 'Failed to get organization' }
@@ -354,7 +293,7 @@ export async function createQuickProject(): Promise<QuickProjectResult> {
     
     console.log('[createQuickProject] Using organization:', orgResult.organizationId)
     
-    // Créer le projet avec les données par défaut
+    // Créer le projet avec les données par défaut (réutilise le même client)
     const projectData = {
       name: 'Untitled project',
       description: undefined,
@@ -362,7 +301,7 @@ export async function createQuickProject(): Promise<QuickProjectResult> {
     }
     
     console.log('[createQuickProject] Creating project with data:', projectData)
-    const { data: project, error: projectError } = await createProjectServer(projectData, user.id, cookieStore)
+    const { data: project, error: projectError } = await createProjectServer(projectData, user.id, supabase)
     
     if (projectError) {
       console.error('[createQuickProject] Project creation failed:', projectError)
@@ -375,7 +314,7 @@ export async function createQuickProject(): Promise<QuickProjectResult> {
       return { success: false, error: 'Project creation returned no data' }
     }
     
-    console.log('[createQuickProject] Project created successfully:', { id: project.id, name: project.name })
+    console.log('[createQuickProject] Project created successfully in optimized flow:', { id: project.id, name: project.name })
     return { success: true, project }
     
   } catch (err) {

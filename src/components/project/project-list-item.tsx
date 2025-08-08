@@ -68,7 +68,7 @@ export default function ProjectListItem({
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className={`
               w-10 h-10 rounded-lg flex items-center justify-center text-lg
-              ${theme.bgLight} dark:${theme.bgDark}
+              ${theme.bgLight} ${theme.bgDark}
             `}>
               {theme.emoji}
             </div>

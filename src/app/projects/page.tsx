@@ -37,7 +37,16 @@ function ProjectsPage() {
     }
     
     try {
-      console.log('[ProjectsPage] Starting project creation...')
+      console.log('[ProjectsPage] Starting optimistic project creation...')
+      
+      // Generate optimistic ID and navigate immediately for better UX
+      const optimisticId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      const targetUrl = `/projects/${optimisticId}?openSources=true&creating=true`
+      
+      console.log('[ProjectsPage] Navigating optimistically to:', targetUrl)
+      router.push(targetUrl);
+      
+      // Start project creation in background
       const result = await createQuickProject();
       
       console.log('[ProjectsPage] Project creation result:', {
@@ -47,17 +56,21 @@ function ProjectsPage() {
       })
       
       if (result.success && result.project) {
-        // Navigate to the project detail page with auto-open sources modal
-        const targetUrl = `/projects/${result.project.id}?openSources=true`
-        console.log('[ProjectsPage] Navigating to:', targetUrl)
-        router.push(targetUrl);
+        // Replace the optimistic URL with the real project ID
+        const realUrl = `/projects/${result.project.id}?openSources=true`
+        console.log('[ProjectsPage] Replacing URL with real project ID:', realUrl)
+        router.replace(realUrl);
         toast.success("Projet créé avec succès !");
       } else {
         console.error('[ProjectsPage] Project creation failed:', result.error)
+        // Navigate back to projects page on failure
+        router.replace('/projects');
         toast.error(result.error || "Erreur lors de la création du projet");
       }
     } catch (error) {
       console.error("[ProjectsPage] Exception in handleCreateProject:", error);
+      // Navigate back to projects page on exception
+      router.replace('/projects');
       toast.error("Erreur inattendue lors de la création du projet");
     }
   };

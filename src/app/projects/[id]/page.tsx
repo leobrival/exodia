@@ -25,6 +25,10 @@ export default function ProjectDetailsPage() {
   const [projectError, setProjectError] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
 
+  // Check if this is an optimistic (temporary) project being created
+  const isOptimisticProject = id.startsWith('temp_');
+  const isCreating = searchParams.get('creating') === 'true';
+
   // Hook pour gérer les sources du projet
   const {
     documents,
@@ -37,6 +41,26 @@ export default function ProjectDetailsPage() {
   useEffect(() => {
     const fetchProject = async () => {
       if (!id) return;
+
+      // If this is an optimistic project being created, show loading state but don't fetch
+      if (isOptimisticProject) {
+        console.log('[ProjectDetailsPage] Optimistic project detected, showing creation loading...');
+        setProjectLoading(true);
+        setProjectError(null);
+        // Create a temporary project object for display
+        setProject({
+          id,
+          name: 'Untitled project',
+          description: '',
+          organization_id: '',
+          slug: '',
+          status: 'draft',
+          created_by: '',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+        return;
+      }
 
       try {
         setProjectLoading(true);
@@ -68,7 +92,7 @@ export default function ProjectDetailsPage() {
     };
 
     fetchProject();
-  }, [id]);
+  }, [id, isOptimisticProject]);
 
   // Auto-open sources modal based on URL parameter or no sources
   useEffect(() => {
@@ -138,6 +162,15 @@ export default function ProjectDetailsPage() {
       />
 
       <div className="min-h-screen bg-background flex flex-col">
+        {/* Creation loading banner */}
+        {(isOptimisticProject || isCreating) && (
+          <div className="bg-blue-50 dark:bg-blue-950 border-b border-blue-200 dark:border-blue-800 px-6 py-3">
+            <div className="flex items-center gap-3 text-sm text-blue-700 dark:text-blue-300">
+              <div className="animate-spin h-4 w-4 border-2 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full"></div>
+              <span>Création du projet en cours...</span>
+            </div>
+          </div>
+        )}
         {/* TODO ✅ RÉALISÉ: Nav bar avec le nom du projet (avec possibilité de modifier le nom) et le bouton pour revenir à la liste des projets, avec un bouton action (supprimer le projet) */}
         <ProjectHeader
           project={project}
