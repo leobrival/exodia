@@ -63,7 +63,10 @@ export default function SourcesList({
     switch (status) {
       case "ready":
         return (
-          <Badge variant="default" className="bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300">
+          <Badge
+            variant="default"
+            className="bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300"
+          >
             Prêt
           </Badge>
         );
@@ -154,7 +157,7 @@ export default function SourcesList({
         {documents.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">Aucune source</h3>
+            <h3 className="text-lg font-medium mb-2">0 source</h3>
             <p className="text-sm text-muted-foreground mb-4">
               Ajoutez des documents pour commencer à travailler avec l'IA
             </p>
@@ -166,7 +169,7 @@ export default function SourcesList({
         ) : (
           <div className="space-y-3">
             {documents.map((doc) => (
-              <Card key={doc.id} className="hover:shadow-md transition-shadow">
+              <Card key={doc.id} className="shadow-none">
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2 min-w-0 flex-1">

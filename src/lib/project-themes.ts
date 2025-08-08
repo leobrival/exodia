@@ -244,7 +244,7 @@ export function formatProjectDate(dateString: string): string {
  */
 export function formatSourcesCount(count: number): string {
   if (count === 0) {
-    return "aucune source";
+    return "0 source";
   } else if (count === 1) {
     return "1 source";
   } else {

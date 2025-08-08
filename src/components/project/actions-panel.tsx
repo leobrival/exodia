@@ -68,25 +68,25 @@ export default function ActionsPanel({
       </div>
 
       <div className="grid grid-cols-2 gap-4 p-4">
-        <Card className="flex aspect-video p-3 justify-center">
+        <Card className="flex aspect-video p-3 justify-center shadow-none">
           <h3 className="font-normal text-base flex flex-col gap-2">
             <Play className="h-6 w-6" />
             Résumé audio
           </h3>
         </Card>
-        <Card className="flex aspect-video p-3 justify-center">
+        <Card className="flex aspect-video p-3 justify-center shadow-none">
           <h3 className="font-normal text-base flex flex-col gap-2">
             <MessageSquare className="h-6 w-6" />
             Questions
           </h3>
         </Card>
-        <Card className="flex aspect-video p-3 justify-center">
+        <Card className="flex aspect-video p-3 justify-center shadow-none">
           <h3 className="font-normal text-base flex flex-col gap-2">
             <FileText className="h-6 w-6" />
             Rapport
           </h3>
         </Card>
-        <Card className="flex aspect-video p-3 justify-center">
+        <Card className="flex aspect-video p-3 justify-center shadow-none">
           <h3 className="font-normal text-base flex flex-col gap-2">
             <FileText className="h-6 w-6" />
             Synthèse

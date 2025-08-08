@@ -120,7 +120,7 @@ Cette fonctionnalité de chat avec l'IA sera implémentée prochainement avec un
       <div
         {...getRootProps()}
         className={cn(
-          "min-h-full flex-1 flex flex-col items-center bg-background/50 rounded-3xl text-foreground justify-center text-center p-8 border-2 border-dashed transition-colors",
+          "min-h-full flex-1 flex flex-col items-center bg-card rounded-3xl text-foreground justify-center text-center p-8 border-2 border-dashed transition-colors",
           isDragActive
             ? "border-primary bg-primary/5"
             : "border-muted-foreground/25",
@@ -163,7 +163,7 @@ Cette fonctionnalité de chat avec l'IA sera implémentée prochainement avec un
   return (
     <div
       className={cn(
-        "min-h-full flex-1 flex flex-col bg-background text-foreground rounded-3xl",
+        "min-h-full flex-1 flex flex-col bg-card text-foreground rounded-3xl",
         className
       )}
     >

@@ -98,14 +98,17 @@ export default function ProjectDetailsPage() {
   useEffect(() => {
     const openSources = searchParams.get('openSources');
     
-    // Force open if URL parameter is present
-    if (openSources === 'true' && !projectLoading && project && !projectError) {
-      setModalOpen(true);
-      return;
-    }
-    
-    // Default behavior: open if no sources
-    if (!sourcesLoading && !hasSources && project) {
+    // Open modal if:
+    // 1. URL parameter is present AND no sources exist, OR
+    // 2. Default behavior: project loaded but no sources
+    if (
+      !projectLoading && 
+      project && 
+      !projectError && 
+      !sourcesLoading && 
+      !hasSources &&
+      (openSources === 'true' || !searchParams.has('openSources'))
+    ) {
       setModalOpen(true);
     }
   }, [searchParams, projectLoading, project, projectError, sourcesLoading, hasSources]);
