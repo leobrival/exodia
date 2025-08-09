@@ -10,7 +10,7 @@ interface NewProjectCardProps {
 export default function NewProjectCard({ onClick }: NewProjectCardProps) {
   return (
     <Card
-      className="cursor-pointer select-none border-dashed border-2 rounded-xl w-full aspect-[3/2]"
+      className="cursor-pointer select-none border-dashed border-2 bg-transparent rounded-xl w-full aspect-[3/2] shadow-none"
       onClick={onClick}
     >
       <CardContent className="p-6 flex flex-col items-center justify-center text-center rounded-2xl">

@@ -2,122 +2,94 @@ export interface ProjectTheme {
   emoji: string;
   bgLight: string;
   bgDark: string;
-  textLight: string;
-  textDark: string;
   name: string;
 }
 
 export const PROJECT_THEMES: Record<string, ProjectTheme> = {
   business: {
     emoji: "💼",
-    bgLight: "bg-blue-50/50",
-    bgDark: "bg-blue-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-blue-100/75",
+    bgDark: "dark:!bg-blue-950",
     name: "Business",
   },
   tech: {
     emoji: "💻",
-    bgLight: "bg-green-50/50",
-    bgDark: "bg-green-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-green-100/75",
+    bgDark: "dark:!bg-green-950",
     name: "Technology",
   },
   science: {
     emoji: "🔬",
-    bgLight: "bg-purple-50/50",
-    bgDark: "bg-purple-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-purple-100/75",
+    bgDark: "dark:!bg-purple-950",
     name: "Science",
   },
   marketing: {
     emoji: "📢",
-    bgLight: "bg-orange-50/50",
-    bgDark: "bg-orange-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-orange-100/75",
+    bgDark: "dark:!bg-orange-950",
     name: "Marketing",
   },
   education: {
     emoji: "📚",
-    bgLight: "bg-yellow-50/50",
-    bgDark: "bg-yellow-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-yellow-100/75",
+    bgDark: "dark:!bg-yellow-950",
     name: "Education",
   },
   health: {
     emoji: "🏥",
-    bgLight: "bg-red-50/50",
-    bgDark: "bg-red-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-red-100/75",
+    bgDark: "dark:!bg-red-950",
     name: "Health",
   },
   finance: {
     emoji: "💰",
-    bgLight: "bg-emerald-50/50",
-    bgDark: "bg-emerald-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-emerald-100/75",
+    bgDark: "dark:!bg-emerald-950",
     name: "Finance",
   },
   legal: {
     emoji: "⚖️",
-    bgLight: "bg-gray-50/50",
-    bgDark: "bg-gray-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-gray-100/75",
+    bgDark: "dark:!bg-gray-950",
     name: "Legal",
   },
   environment: {
     emoji: "🌱",
-    bgLight: "bg-lime-50/50",
-    bgDark: "bg-lime-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-lime-100/75",
+    bgDark: "dark:!bg-lime-950",
     name: "Environment",
   },
   art: {
     emoji: "🎨",
-    bgLight: "bg-pink-50/50",
-    bgDark: "bg-pink-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-pink-100/75",
+    bgDark: "dark:!bg-pink-950",
     name: "Art & Culture",
   },
   sports: {
     emoji: "⚽",
-    bgLight: "bg-indigo-50/50",
-    bgDark: "bg-indigo-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-indigo-100/75",
+    bgDark: "dark:!bg-indigo-950",
     name: "Sports",
   },
   food: {
     emoji: "🍽️",
-    bgLight: "bg-amber-50/50",
-    bgDark: "bg-amber-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-amber-100/75",
+    bgDark: "dark:!bg-amber-950",
+
     name: "Food & Beverage",
   },
   travel: {
     emoji: "✈️",
-    bgLight: "bg-sky-50/50",
-    bgDark: "bg-sky-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-sky-100/75",
+    bgDark: "dark:!bg-sky-950",
+
     name: "Travel & Tourism",
   },
   default: {
     emoji: "📄",
-    bgLight: "bg-slate-50/50",
-    bgDark: "bg-slate-950",
-    textLight: "text-foreground",
-    textDark: "text-foreground",
+    bgLight: "!bg-slate-100/75",
+    bgDark: "dark:!bg-slate-950",
     name: "Document",
   },
 };
@@ -272,7 +244,7 @@ export function formatProjectDate(dateString: string): string {
  */
 export function formatSourcesCount(count: number): string {
   if (count === 0) {
-    return "aucune source";
+    return "0 source";
   } else if (count === 1) {
     return "1 source";
   } else {

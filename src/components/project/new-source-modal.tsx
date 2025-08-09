@@ -317,7 +317,10 @@ export default function NewSourceModal({
         return <Badge variant="default">Traitement...</Badge>;
       case "success":
         return (
-          <Badge variant="default" className="bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300">
+          <Badge
+            variant="default"
+            className="bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300"
+          >
             Succès
           </Badge>
         );
@@ -330,7 +333,7 @@ export default function NewSourceModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[70vw] max-h-[80vh] flex flex-col rounded-3xl">
+      <DialogContent className="sm:max-w-[70vw] max-h-[80vh] flex flex-col rounded-2xl bg-card shadow-none border-none">
         <DialogHeader>
           <DialogTitle>Importer des sources</DialogTitle>
           <DialogDescription className="text-base">

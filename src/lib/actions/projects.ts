@@ -103,26 +103,33 @@ export async function getUserProjects(userId?: string): Promise<{ data: Project[
 }
 
 // Récupérer les organisations de l'utilisateur
-export async function getUserOrganizations(): Promise<{ data: Organization[] | null; error: any }> {
+export async function getUserOrganizations(userId?: string): Promise<{ data: Organization[] | null; error: any }> {
   const result = await withErrorHandling(async () => {
     const supabase = createBrowserClient()
 
-    console.log('[getUserOrganizations] Fetching organizations for user...')
+    console.log('[getUserOrganizations] Fetching organizations for user...', { userId })
     
-    // Vérifier l'authentification
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    let currentUserId = userId
     
-    if (authError) {
-      const serializedError = logError('getUserOrganizations:auth', authError, { step: 'authentication' })
-      throw new Error(`Authentication failed: ${serializedError.message}`)
+    // Si userId non fourni, utiliser l'authentification Supabase
+    if (!currentUserId) {
+      // Vérifier l'authentification
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      
+      if (authError) {
+        const serializedError = logError('getUserOrganizations:auth', authError, { step: 'authentication' })
+        throw new Error(`Authentication failed: ${serializedError.message}`)
+      }
+      
+      if (!user) {
+        console.error('[getUserOrganizations] No authenticated user')
+        throw new Error('No authenticated user')
+      }
+      
+      currentUserId = user.id
     }
     
-    if (!user) {
-      console.error('[getUserOrganizations] No authenticated user')
-      throw new Error('No authenticated user')
-    }
-    
-    console.log('[getUserOrganizations] Current user:', user.id)
+    console.log('[getUserOrganizations] Using userId:', currentUserId)
 
     // SIMPLIFIED: Get organizations created by the user directly
     // This avoids RLS issues and is the most straightforward approach
@@ -137,7 +144,7 @@ export async function getUserOrganizations(): Promise<{ data: Organization[] | n
         created_at,
         updated_at
       `)
-      .eq('created_by', user.id)
+      .eq('created_by', currentUserId)
       .order('created_at', { ascending: false })
 
     console.log('[getUserOrganizations] Query result:', { dataCount: data?.length || 0, error })
@@ -145,7 +152,7 @@ export async function getUserOrganizations(): Promise<{ data: Organization[] | n
     if (error) {
       const serializedError = logError('getUserOrganizations:query', error, { 
         step: 'database_query',
-        userId: user.id
+        userId: currentUserId
       })
       throw new Error(`Database query failed: ${serializedError.message}`)
     }
